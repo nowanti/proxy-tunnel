@@ -1,0 +1,21 @@
+version: '3'
+
+services:
+  test:
+    image: openresty/openresty:1.21.4.1-5-jammy-aarch64
+    container_name: test
+    # volumes:
+    #   - "./conf/nginx.conf:/usr/local/openresty/nginx/conf/nginx.conf"
+    #   - "./conf.d:/etc/nginx/conf.d"
+    #   - "./libs:/usr/local/openresty/lualib"
+    volumes:
+      - "./agent:/agent"
+    # command: usr/bin/openresty -p /root/proxy-tunnel
+    network_mode: host
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "1m"
+
+
+# opm install hamishforbes/lua-resty-iputils
