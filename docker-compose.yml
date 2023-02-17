@@ -11,11 +11,22 @@ services:
 #    volumes:
 #      - "./agent:/agent"
     # command: usr/bin/openresty -p /root/proxy-tunnel
-    network_mode: host
+#    network_mode: host
+    ports:
+      - "30000:30000"
+      - "30100-30200:30100-30200"
+    environment:
+      - REDIS_HOST=172.20.0.2
+      - REDIS_PORT=6379
+      - REDIS_DB=0
+      - REDIS_PASSWORD=XkNpx4Izc!T9uQ1smFd%WusBkp6P6XJC
+    networks:
+      - db
     logging:
       driver: "json-file"
       options:
         max-size: "1m"
 
-
-# opm install hamishforbes/lua-resty-iputils
+networks:
+  db:
+    external: true
