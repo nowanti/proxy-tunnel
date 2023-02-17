@@ -1,4 +1,4 @@
-FROM openresty/openresty:1.21.4.1-5-jammy-aarch64
+FROM openresty/openresty:1.21.4.1-5-jammy
 WORKDIR /app
 
 RUN opm get ledgetech/lua-resty-http && \
