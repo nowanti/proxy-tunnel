@@ -2,20 +2,24 @@ version: '3'
 
 services:
   test:
-    image: openresty/openresty:1.21.4.1-5-jammy-aarch64
-    container_name: test
-    # volumes:
-    #   - "./conf/nginx.conf:/usr/local/openresty/nginx/conf/nginx.conf"
-    #   - "./conf.d:/etc/nginx/conf.d"
-    #   - "./libs:/usr/local/openresty/lualib"
-    volumes:
-      - "./agent:/agent"
-    # command: usr/bin/openresty -p /root/proxy-tunnel
-    network_mode: host
+    image: proxy-tunnel:latest
+    container_name: proxy-tunnel
+#    network_mode: host
+    ports:
+      - "30000:30000"
+      - "30100-30200:30100-30200"
+    environment:
+      - REDIS_HOST=172.20.0.2
+      - REDIS_PORT=6379
+      - REDIS_DB=0
+      - REDIS_PASSWORD=XkNpx4Izc!T9uQ1smFd%WusBkp6P6XJC
+    networks:
+      - db
     logging:
       driver: "json-file"
       options:
         max-size: "1m"
 
-
-# opm install hamishforbes/lua-resty-iputils
+networks:
+  db:
+    external: true
