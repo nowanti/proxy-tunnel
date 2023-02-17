@@ -1,0 +1,31 @@
+name: Build Docker Image CI
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  dockerfile: './.docker/Dockerfile'
+  platform: 'linux/amd64'
+  image_name: 'nowanto/proxy-tunnel'
+  tag: 'latest'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        name: Check out code
+
+      - uses: ilteoood/docker_buildx@master
+        name: Build & push Docker image
+        with:
+          publish: true
+          dockerFile: ${{ env.dockerfile }}
+          imageName: ${{ secrets.CI_REGISTRY }}/${{ env.image_name }}
+          tag: ${{ env.tag }}
+          platform: ${{ env.platform }}
+          dockerServer: ${{ secrets.CI_REGISTRY }}
+          dockerUser: ${{ secrets.CI_REGISTRY_USER }}
+          dockerPassword: ${{ secrets.CI_REGISTRY_PASSWORD }}
