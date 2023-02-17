@@ -8,12 +8,14 @@ local _M = {
 }
 
 local timer_delay = 60
-local key_white_ips = "proxy:white_ips"
+local key_white_ips = "proxy_tunnel:white_ips"
 local default_white_ips = {
     "127.0.0.1",
     "10.10.10.0/24",
     "192.168.0.0/16",
+    "172.10.0.0/24",
     "172.18.0.0/24",
+    "172.20.0.0/24",
 }
 
 local function reload_white_ips()
