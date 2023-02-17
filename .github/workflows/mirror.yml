@@ -10,11 +10,11 @@ jobs:
     - name: Mirror + trigger CI
       uses: SvanBoxel/gitlab-mirror-and-ci-action@master
       with:
-        args: "http://git.tianjiyunke.com/liuyang/qcloud-control-test"
+        args: "http://git.tianjiyunke.com/liuyang/proxy-tunnel"
       env:
         FORCE_PUSH: "false"
         GITLAB_HOSTNAME: "git.tianjiyunke.com"
         GITLAB_USERNAME: "believel.y@qq.com"
         GITLAB_PASSWORD: ${{ secrets.GITLAB_TOKEN }}
-        GITLAB_PROJECT_ID: "125"
+        GITLAB_PROJECT_ID: "128"
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
