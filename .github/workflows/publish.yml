@@ -6,7 +6,7 @@ on:
       - main
 
 env:
-  dockerfile: './.docker/Dockerfile'
+  dockerfile: './Dockerfile'
   platform: 'linux/amd64'
   image_name: 'nowanto/proxy-tunnel'
   tag: 'latest'
