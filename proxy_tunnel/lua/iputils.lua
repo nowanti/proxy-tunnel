@@ -68,7 +68,7 @@ function _M.init_worker_by()
     end
 end
 
-function _M.ip_in_white_ips()
+function _M.client_access_check(http_forbidden)
     local white_ips = cjson.decode(ngx_shared_ips():get("white"))
     --log(ERR, ngx.worker.id(), ": white_ips.cidr: ", cjson.encode(white_ips));
 
@@ -79,7 +79,8 @@ function _M.ip_in_white_ips()
             ngx.ctx.proxy_port = 403
             return false
         else
-            return ngx.exit(ngx.HTTP_FORBIDDEN)
+            -- http 中 客户端ip不在白名单中， 当 http_forbidden=false 时返回 false ，否则直接返回 ngx.exit(ngx.HTTP_FORBIDDEN)
+            return http_forbidden == false and false or ngx.exit(ngx.HTTP_FORBIDDEN)
         end
     end
     return true
