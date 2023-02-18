@@ -2,7 +2,7 @@ version: '3'
 
 services:
   test:
-    image: proxy-tunnel:latest
+    image: ${PROXY_TUNNEL_IMAGE}
     container_name: proxy-tunnel
 #    network_mode: host  # 在服务器上部署时建议使用 host ，同时屏蔽下面的 ports
     ports:
@@ -14,6 +14,8 @@ services:
       - REDIS_PORT
       - REDIS_DB
       - REDIS_PASSWORD
+      # 代理提取地址，需要将 url 中表示数量的字段（假设为 &num=3）的值改成 &num=%d
+      - PROXY_URL
     networks:
       - db
     logging:
