@@ -11,11 +11,9 @@ local timer_delay = 60
 local key_white_ips = "proxy_tunnel:white_ips"
 local default_white_ips = {
     "127.0.0.1",
-    "10.10.10.0/24",
+    "10.10.0.0/16",
     "192.168.0.0/16",
-    "172.10.0.0/24",
-    "172.18.0.0/24",
-    "172.20.0.0/24",
+    "172.0.0.0/8",
 }
 
 local function ngx_shared_ips()
@@ -29,18 +27,30 @@ local function reload_white_ips()
         return log(ERR, "failed: redis:new: ", err);
     end
 
+    -- 获取最新白名单
     res, err = rds:hkeys(key_white_ips)
     if err then
         return log(ERR, "failed: rds.hkeys(key_white_ips): ", err);
     end
-    --log(ERR, ngx.worker.id(), ": white res: ", cjson.encode(res));
+    --log(ERR, ngx.worker.id(), ": white_ips.redis: ", cjson.encode(res));
 
-    local white_ips = (res and #res > 0) and res or default_white_ips
-    --log(ERR, ngx.worker.id(), ": white_ips.redis: ", cjson.encode(white_ips));
+    -- 设置/加载默认 白名单
+    local white_ips = res
+    if not white_ips or #white_ips==0 then
+        white_ips = default_white_ips
+        local to_add = {}
+        for i, v in ipairs(default_white_ips) do
+            table.insert(to_add, v)
+            table.insert(to_add, "default")
+        end
+        --log(ERR, ngx.worker.id(), ": white_ips.default: ", cjson.encode(to_add));
+        res, err = rds:hmset(key_white_ips, table.unpack(to_add))
+        --log(ERR, "rds:hmset: ", res, err);
+    end
 
+    -- 转换白名单格式
     local iputils = require("resty.iputils")
     iputils.enable_lrucache()
-
     white_ips = cjson.encode(iputils.parse_cidrs(white_ips))
     --log(ERR, ngx.worker.id(), ": white_ips.cidr: ", white_ips);
 
