@@ -70,7 +70,7 @@ end
 
 function _M.ip_in_white_ips()
     local white_ips = cjson.decode(ngx_shared_ips():get("white"))
-    log(ERR, ngx.worker.id(), ": white_ips.cidr: ", cjson.encode(white_ips));
+    --log(ERR, ngx.worker.id(), ": white_ips.cidr: ", cjson.encode(white_ips));
 
     local iputils = require("resty.iputils")
     if not iputils.ip_in_cidrs(ngx.var.remote_addr, white_ips) then
