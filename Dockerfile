@@ -7,4 +7,4 @@ RUN opm get ledgetech/lua-resty-http && \
 
 COPY proxy_tunnel .
 
-CMD ["mkdir", "-p", "/app/logs", "&&", "openresty", "-p", "/app"]
+CMD /bin/sh -c "mkdir -p /app/logs && openresty -p /app"
