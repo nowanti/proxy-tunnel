@@ -4,6 +4,6 @@
 **/__pycache__
 docker_buildx
 tests
-.deploy
 .dockerignore
 Dockerfile
+docker-compose.yml

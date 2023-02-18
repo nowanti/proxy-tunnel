@@ -1,4 +1,4 @@
-FROM openresty/openresty:1.21.4.1-5-jammy-aarch64
+FROM openresty/openresty:1.21.4.1-5-jammy
 WORKDIR /app
 
 RUN opm get ledgetech/lua-resty-http && \
@@ -7,4 +7,4 @@ RUN opm get ledgetech/lua-resty-http && \
 
 COPY proxy_tunnel .
 
-CMD ["openresty", "-p", "/app"]
+CMD /bin/sh -c "mkdir -p /app/logs && openresty -p /app"
