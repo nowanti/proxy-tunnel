@@ -22,6 +22,7 @@
 
 ## 使用例子
 
+> docker image url: https://hub.docker.com/r/nowanti/proxy-tunnel
 1. 部署：参考 `docker-compose.yml` 文件部署服务，并在防火墙（本地/云）开放相应端口
 2. 加白：在 `redis` 的 `proxy_tunnel:white_ips` 中添加自己当前机器的ip
 3. 验证：执行 `curl -v -x http://PROXY_TUNNEL_SERVER_IP:30100 http://httpbin.org/ip`
