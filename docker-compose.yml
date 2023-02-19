@@ -16,6 +16,7 @@ services:
       - REDIS_PORT
       - REDIS_DB
       - REDIS_PASSWORD
+      - TZ=Asia/Shanghai
     networks:
       - db
     logging:
