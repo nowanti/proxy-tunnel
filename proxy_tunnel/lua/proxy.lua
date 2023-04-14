@@ -85,9 +85,9 @@ local function proxy_update_handler(premature)
     if premature then return end
     proxy_update()
     -------------------------------------
-    ---重新启动timer
-    local ok, err = ngx.timer.at(0, proxy_update_handler)
-    if not ok then log(ERR, "failed to create timer: ", err) end
+--     ---重新启动timer
+--     local ok, err = ngx.timer.at(0, proxy_update_handler)
+--     if not ok then log(ERR, "failed to create timer: ", err) end
 end
 -- -------------------------------------
 local port_random = 30100
@@ -111,7 +111,7 @@ end
 -- 执行阶段 ----------
 function _M.init_worker_by()
     if ngx.worker.id() == 0 then
-        ngx.timer.at(timer_delay, proxy_update_handler)
+        ngx.timer.every(timer_delay, proxy_update_handler)
     end
 end
 
