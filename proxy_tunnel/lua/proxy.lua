@@ -47,15 +47,13 @@ end
 
 local function proxy_check(proxy_ip)
     -- 检测代理是否可用
-    url = "http://www.baidu.com"
-    keywords = "百度一下"
     local httpc = require("resty.http").new()
     httpc:set_timeout(5000)
     httpc:set_proxy_options({http_proxy = proxy_ip})
-    local res, err = httpc:request_uri(url, {method = "GET"})
-    log(ERR, "proxy_check: ", proxy_ip, " | ", keywords, " | ", res and res.body and string.find(res.body, keywords))
+    local res, err = httpc:request_uri(proxy_check_url, {method = "GET"})
+    log(ERR, "proxy_check: ", proxy_ip, " | ", proxy_check_keywords, " | ", res and res.body and string.find(res.body, proxy_check_keywords))
     -- 检测返回结果是否包含关键字
-    if res and res.body and string.find(res.body, keywords) then
+    if res and res.body and string.find(res.body, proxy_check_keywords) then
         return true
     else
         return false
