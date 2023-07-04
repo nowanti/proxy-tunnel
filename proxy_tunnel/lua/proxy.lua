@@ -46,12 +46,14 @@ local function is_need_fetch(rds)
 end
 
 local function proxy_check(proxy_ip)
+    log(ERR, "proxy_check: ", proxy_ip, " | ", proxy_check_keywords, " | ", proxy_check_url)
     -- 检测代理是否可用
     local httpc = require("resty.http").new()
     httpc:set_timeout(5000)
     httpc:set_proxy_options({http_proxy = proxy_ip})
-    local res, err = httpc:request_uri(proxy_check_url, {method = "GET"})
-    log(ERR, "proxy_check: ", proxy_ip, " | ", proxy_check_keywords, " | ", res and res.body and string.find(res.body, proxy_check_keywords))
+    local res, err = httpc:request_uri(proxy_check_url, {method = "GET", ssl_verify = false})
+    -- log(ERR,"httpc:request_uri: ", res.body, " | ", err);
+    log(ERR, proxy_ip, " | ", proxy_check_keywords, " | ", string.find(res.body, proxy_check_keywords))
     -- 检测返回结果是否包含关键字
     if res and res.body and string.find(res.body, proxy_check_keywords) then
         return true
@@ -91,12 +93,12 @@ local function proxy_update()
     local demand = is_need_fetch(rds)
     if demand==0 then return end
     local fetched, to_add = proxy_fetch(demand)
-    log(ERR,"proxy_fetch: fetched/useful: ", fetched, "/", #to_add/2, type(to_add), " | ", table.unpack(to_add));
+    log(ERR,"proxy_fetch: fetched/useful: ", fetched, "/", #to_add/2, " | ", type(to_add), " | ", table.unpack(to_add));
     if type(to_add)~="table" then return end
 
     rds:del(key_proxys)
     res, err = rds:hset(key_proxys, table.unpack(to_add))
-    log(ERR, "proxy_update: to_add : ", #to_add/2, " result : ", res, " ", err)
+    log(ERR, "rds:hset: to_add : ", #to_add/2, " result : ", res, " ", err)
     rds:set(key_last_fetch, ngx.time()) --更新最后提取时间
 end
 
