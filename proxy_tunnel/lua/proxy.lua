@@ -94,7 +94,7 @@ local function proxy_update()
     if demand==0 then return end
     local fetched, to_add = proxy_fetch(demand)
     log(ERR,"proxy_fetch: fetched/useful: ", fetched, "/", #to_add/2, " | ", type(to_add), " | ", table.unpack(to_add));
-    if type(to_add)~="table" then return end
+    if type(to_add)~="table" or (#to_add/2)==0 then return end
 
     rds:del(key_proxys)
     res, err = rds:hset(key_proxys, table.unpack(to_add))
