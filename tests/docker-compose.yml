@@ -1,0 +1,30 @@
+version: '3'
+
+services:
+  proxy-tunnel:
+    image: ${PROXY_TUNNEL_IMAGE}
+    container_name: proxy-tunnel
+    network_mode: host  # 在服务器上部署时建议使用 host ，同时屏蔽下面的 ports
+#    ports:
+#      - "30000:30000"
+#      - "30100-30200:30100-30200"
+    environment:
+      # 自行配置 redis 相关环境变量
+      - REDIS_HOST
+      - REDIS_PORT
+      - REDIS_DB
+      - REDIS_PASSWORD
+      # 代理提取地址，需要将 url 中表示数量的字段（假设为 &num=3）的值改成 &num=%d
+      - PROXY_URL
+      - PROXY_CHECK_URL
+      - PROXY_CHECK_KEYWORDS
+#    networks:
+#      - db
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "1m"
+
+networks:
+  db:
+    external: true
