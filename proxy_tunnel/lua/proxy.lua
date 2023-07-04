@@ -180,4 +180,11 @@ function _M.balancer_by()
     end
 end
 
+function _M.refresh()
+    local rds, res, err
+    rds, res, err = require("lua.redis").new()
+    if err then return log(ERR,"failed: redis:new: ", err) end
+    rds:set(key_last_fetch, 0) --设置最后提取时间为0，以便快速触发重新提取
+end
+
 return _M
