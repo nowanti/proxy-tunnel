@@ -18,6 +18,8 @@ if proxy_url==nil then
     log(ERR,"failed: PROXY_URL is nil, please configure it first.")
     os.execute("/usr/local/openresty/bin/openresty -s stop -p /app")
 end
+local proxy_check_url = os.getenv("PROXY_CHECK_URL")
+local proxy_check_keywords = os.getenv("PROXY_CHECK_KEYWORDS")
 -- -------------------------------------
 local timer_delay = 5  --定时器周期
 local fetch_cycle = 40 --代理更新周期
@@ -43,6 +45,23 @@ local function is_need_fetch(rds)
     return #res<=fetch_num_limit and #res or fetch_num_limit
 end
 
+local function proxy_check(proxy_ip)
+    -- 检测代理是否可用
+    url = "http://www.baidu.com"
+    keywords = "百度一下"
+    local httpc = require("resty.http").new()
+    httpc:set_timeout(5000)
+    httpc:set_proxy_options({http_proxy = proxy_ip})
+    local res, err = httpc:request_uri(url, {method = "GET"})
+    log(ERR, "proxy_check: ", proxy_ip, " | ", keywords, " | ", res and res.body and string.find(res.body, keywords))
+    -- 检测返回结果是否包含关键字
+    if res and res.body and string.find(res.body, keywords) then
+        return true
+    else
+        return false
+    end
+end
+
 local function proxy_fetch(demand)
     ---获取代理
     local url = string.format(proxy_url, demand)
@@ -58,10 +77,12 @@ local function proxy_fetch(demand)
     ---添加代理获取时间
     local to_add = {}
     for i, v in ipairs(ips) do
-        table.insert(to_add, v)
-        table.insert(to_add, ngx.time())
+        if proxy_check_url==nil or proxy_check(v) then
+            table.insert(to_add, v)
+            table.insert(to_add, ngx.time())
+        end
     end
-    return to_add
+    return #ips, to_add
 end
 
 local function proxy_update()
@@ -71,13 +92,13 @@ local function proxy_update()
 
     local demand = is_need_fetch(rds)
     if demand==0 then return end
-    local ips = proxy_fetch(demand)
-    log(ERR,"proxy_fetch: ", type(ips), " | ", table.unpack(ips));
-    if type(ips)~="table" then return end
+    local fetched, to_add = proxy_fetch(demand)
+    log(ERR,"proxy_fetch: fetched/useful: ", fetched, "/", #to_add/2, type(to_add), " | ", table.unpack(to_add));
+    if type(to_add)~="table" then return end
 
     rds:del(key_proxys)
-    res, err = rds:hset(key_proxys, table.unpack(ips))
-    log(ERR, "to_add : ", #ips/2, " result : ", res, " ", err)
+    res, err = rds:hset(key_proxys, table.unpack(to_add))
+    log(ERR, "proxy_update: to_add : ", #to_add/2, " result : ", res, " ", err)
     rds:set(key_last_fetch, ngx.time()) --更新最后提取时间
 end
 
