@@ -46,14 +46,14 @@ local function is_need_fetch(rds)
 end
 
 local function proxy_check(proxy_ip)
-    log(ERR, "proxy_check: ", proxy_ip, " | ", proxy_check_keywords, " | ", proxy_check_url)
+    -- log(ERR, "proxy_check: ", proxy_ip, " | ", proxy_check_keywords, " | ", proxy_check_url)
     -- 检测代理是否可用
     local httpc = require("resty.http").new()
     httpc:set_timeout(5000)
     httpc:set_proxy_options({http_proxy = proxy_ip})
     local res, err = httpc:request_uri(proxy_check_url, {method = "GET", ssl_verify = false})
     -- log(ERR,"httpc:request_uri: ", res.body, " | ", err);
-    log(ERR, proxy_ip, " | ", proxy_check_keywords, " | ", string.find(res.body, proxy_check_keywords))
+    log(ERR, proxy_ip, " | ", proxy_check_url, " | ", proxy_check_keywords, " | ", string.find(res.body, proxy_check_keywords))
     -- 检测返回结果是否包含关键字
     if res and res.body and string.find(res.body, proxy_check_keywords) then
         return true
