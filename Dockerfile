@@ -6,5 +6,6 @@ RUN opm get ledgetech/lua-resty-http && \
     opm get hamishforbes/lua-resty-iputils
 
 COPY proxy_tunnel .
+RUN cat conf/nginx.conf
 
 CMD /bin/sh -c "mkdir -p /app/logs && openresty -p /app"
