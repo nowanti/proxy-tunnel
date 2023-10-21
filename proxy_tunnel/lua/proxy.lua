@@ -69,7 +69,7 @@ local function proxy_fetch(demand)
     local httpc = require("resty.http").new()
     httpc:set_timeout(5000)
     --httpc:set_proxy_options({http_proxy = proxy})  -- local proxy = "http://"..args.host..":"..args.port
-    local res, err = httpc:request_uri(url, {method = "GET"})
+    local res, err = httpc:request_uri(url, {method = "GET", ssl_verify = false})
     if not res or not res.body then return log(ERR,"failed: fetch_proxy: ", cjson.encode(err)) end
     --res={body="42.85.107.206:35413\r\n114.233.136.139:61321\r\n106.116.81.217:59298"}
     log(ERR,"httpc:request_uri: ", res.body, " | ", err);
